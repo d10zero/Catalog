@@ -1,0 +1,32 @@
+{% include "header.html" %}
+<html>
+	<body>
+		<div class="container-fluid" style="border: 1px solid black; padding: 20px;">
+			<div class="row">
+				<div class="col-md-12">
+					<h1>Add Item</h1>
+				</div>
+			</div>
+			<div class="row">
+				<form action="{{ url_for('addItem')}}" method = 'POST'>
+
+					<p>Name: </p>
+					<input type='text' size='30' name='name' placeholder='Name'>
+
+					<p>Description:</p>
+					<input type="text" size='100' name="description" placeholder='Description'>
+
+					<p>Category: </p>
+					<div class="form-group">
+				    	<select  style="max-width: 50%;" class="form-control" name="category" id="sel1">
+				    		{% for c in categories %}
+				    			<option>{{c.name}}</option>
+				    		{% endfor %}
+				    	</select>
+				    </div>
+					<input type='submit' value='Submit'>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

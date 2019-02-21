@@ -1,0 +1,113 @@
+<head>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+  </script>
+  	
+<script src="https://apis.google.com/js/platform.js?onload=start"> </script>
+<!--meta name="google-signin-client_id" content="13140951618-15nik769cellkubaqnjk5facdib2dh4d.apps.googleusercontent.com"-->
+
+	<script>
+    gapi.load('auth2', function() {
+      auth2 = gapi.auth2.init({
+        client_id: '85000193262-h3gga75qsar4ai3mdap4ah5gjuhq06o1.apps.googleusercontent.com',
+        // Scopes to request in addition to 'profile' and 'email'
+        //scope: 'additional_scope'
+      });
+    });
+	</script>
+	
+</head>
+<body>
+	<div class="row"></br></br></div>
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="row top-menu">
+				<div class="col-md-6" style="padding-bottom: 5px;">
+					<a href="{{url_for('latestItems')}}">
+						<h3>Catalog App</h3>
+					</a>
+				</div>
+				<div class="col-md-4"></div>
+				<div class="col-md-2" style="padding-top: 10px;">
+					<button class="btn btn-primary" id="signinButton">Login</button>
+					<button onclick="signOut()" id="signOutButton" style="display: none;"class="btn btn-primary">Logout</button>
+					<!--a href="{{url_for('logout')}}"class="btn btn-primary"> Logout </a> -->
+				</div>
+			</div>
+		</div>
+	</nav>
+	<script>
+		  $('#signinButton').click(function() {
+		    auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+		  });
+	</script>
+	
+	<script>
+	    function signOut() {
+	    	$('#signinButton').attr('style', 'display: inline');
+	    	$('#signOutButton').attr('style', 'display: none');
+	        auth2.signOut().then(function() {
+	            console.log('User signed out.');
+	        });
+	        $.ajax({
+		      type: 'POST',
+		      url: '/logout',
+		      processData: false,
+		      data: '',
+		      contentType: 'application/json',
+		      success: function(result) {
+		        // Handle or verify the server response if necessary.
+		        if (result) {
+		        	console.log("success")
+		          //$('#result').html('Login Successful!</br>'+ result + '')
+		        } else if (authResult['error']) {
+		          	console.log('There was an error: ' + authResult['error']);
+
+		        } else {
+		          //$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+		        	console.log("error")
+		        }
+		      }
+		    });
+	    }
+    </script>
+	<script>
+		function signInCallback(json) {
+		  console.log('inside callback fuction');
+		  console.log(json);
+		  // authResult = JSON.parse(json);
+		  authResult = json;
+
+		  if (authResult['code']) {
+		    // Hide the sign-in button now that the user is authorized, for example:
+		    $('#signinButton').attr('style', 'display: none');
+		    $('#signOutButton').attr('style', 'display: inline');
+		  //    $('#result').html('One-Time Auth Code:</br>'+ authResult['code'] + '')
+		    // Send the code to the server
+		    $.ajax({
+		      type: 'POST',
+		      url: '/oauth/google',
+		      processData: false,
+		      data: authResult['code'],
+		      contentType: 'application/octet-stream; charset=utf-8',
+		      success: function(result) {
+		        // Handle or verify the server response if necessary.
+		        if (result) {
+		        	console.log("success")
+		          //$('#result').html('Login Successful!</br>'+ result + '')
+		        } else if (authResult['error']) {
+		          	console.log('There was an error: ' + authResult['error']);
+		          	$('#signinButton').attr('style', 'display: inline');
+	    			$('#signOutButton').attr('style', 'display: none');
+
+		        } else {
+		          //$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+		        	console.log("error")
+		        }
+		      }
+		    }); 
+		  }
+		}
+</script>
+
+</body>

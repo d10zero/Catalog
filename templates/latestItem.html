@@ -1,0 +1,40 @@
+{% include "header.html" without context %}
+<style type="text/css">
+	.lists {
+		border-left: 3px solid black;
+	}
+	.itemStyle {
+		font-size: 20;
+		font-family: sans-serif;
+
+	}
+</style>
+<div class="row container-fluid" style="border: 1px solid black">
+	<div class="col-md-3">
+		<h1>Catagories</h1>
+		<nav>
+			<ul>
+				{% for r in categories %}
+				<li class="itemStyle">
+					<a href="{{url_for('selectedCategory', category = r.name)}}">{{r.name}}</a>
+				</li>
+				{% endfor %}
+
+			</ul>
+		</nav>
+	</div>
+	<div class="col-md-1"></div>
+	<div class="col-md-8">
+		<a href="{{url_for('addItem')}}"> Add New Item </a>
+		<h1>{{header}} Items</h1>
+		<nav>
+			<ul>
+				{% for l in items %}
+				<li class="itemStyle">
+					<a href="{{url_for('selectedItem', category = l.category.name, item = l.name)}}">{{l.name}} ( {{l.category.name}} )</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</nav>
+	</div>
+</div>

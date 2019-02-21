@@ -1,0 +1,24 @@
+{% include "header.html" %}
+<html>
+	<body>
+		<div class="container-fluid" style="border: 1px solid black; padding: 20px;">
+			<div class="row">
+				<div class="col-md-12">
+					<h1>Delete Item</h1>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<p>Are you sure you want to delete {{item.name}} ?</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<form action="{{ url_for('deleteItem', item=item.name)}}" method = 'POST'>
+							<input type='submit', value = 'Delete'>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
