@@ -25,6 +25,12 @@ session = DBSession()
 
 # session.commit()
 
+# First User:
+user = User(username='Tester', email='tester@gmail.com',
+            picture='CutePhoto.jpg')
+session.add(user)
+session.commit()
+
 # Categories
 soccer = Category(user_id=1, name="Soccer")
 session.add(soccer)
@@ -89,7 +95,7 @@ session.add(tennisBall)
 session.commit()
 
 racket = Item(user_id=1, name="Racket", description="A hand held " +
-	          "racket used to hit a tennis ball across the court.",
+              "racket used to hit a tennis ball across the court.",
               category=tennis)
 session.add(racket)
 session.commit()
