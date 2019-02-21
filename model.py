@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column,Integer,String,ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 from passlib.apps import custom_app_context as pwd_context
-import random, string
-from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+import random
+import string
+from itsdangerous import(TimedJSONWebSignatureSerializer as
+                         Serializer, BadSignature, SignatureExpired)
 
 
 Base = declarative_base()
 secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
-    for x in xrange(32))
+                     for x in xrange(32))
+
 
 class User(Base):
     __tablename__ = 'user'
@@ -23,12 +26,11 @@ class User(Base):
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
 
-
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration=600):
-        s = Serializer(secret_key, expires_in = expiration)
+        s = Serializer(secret_key, expires_in=expiration)
         return s.dumps({'id': self.id})
 
     @staticmethod
@@ -37,13 +39,14 @@ class User(Base):
         try:
             data = s.loads(token)
         except SignatureExpired:
-            #Valid Token, but expired
+            # Valid Token, but expired
             return None
         except BadSignature:
-            #Invalid Token
+            # Invalid Token
             return None
         user_id = data['id']
         return user_id
+
 
 class Category(Base):
     __tablename__ = 'category'
@@ -59,7 +62,6 @@ class Category(Base):
             'id': self.id,
         }
 
-    
 
 class Item(Base):
     __tablename__ = 'item'
@@ -71,17 +73,16 @@ class Item(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
 
-
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
-            'name' : self.name,
-            'id' : self.id,
-            'description' : self.description,
-            'category_id' : self.category_id
+            'name': self.name,
+            'id': self.id,
+            'description': self.description,
+            'category_id': self.category_id
             }
 
-engine = create_engine('sqlite:///catalog.db')
 
+engine = create_engine('sqlite:///catalog.db')
 Base.metadata.create_all(engine)

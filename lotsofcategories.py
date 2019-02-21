@@ -18,17 +18,14 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-# To delete all entries: 
+# To delete all entries:
 # session.query(Category).delete()
 # session.query(Item).delete()
-#session.query(Item).filter_by(name='Jacket').delete()
+# session.query(Item).filter_by(name='Jacket').delete()
 
-#session.commit()
+# session.commit()
 
 # Categories
-
-
-
 soccer = Category(user_id=1, name="Soccer")
 session.add(soccer)
 session.commit()
@@ -53,57 +50,64 @@ skating = Category(user_id=1, name="Skating")
 session.add(skating)
 session.commit()
 
-#Items
+# Items
 
-user = User(username = 'Tester', picture = 'picture', email = 'test@gmail.com')
+user = User(username='Tester', picture='picture', email='test@gmail.com')
 session.add(user)
 session.commit()
 
 skate = session.query(Category).filter_by(name='Skating').one()
-bb = Item(user_id=user.id, name="Dress", description="Ice skating dress one performs in", category=skate)
+bb = Item(user_id=user.id, name="Dress",
+          description="Ice skating dress one performs in",
+          category=skate)
 
 session.add(bb)
 session.commit()
 
-bb = Item(user_id=1, name="Basketball Hoop", description="Metal hoop with a net to shoot the basketball into.", category=basketball)
+bb = Item(user_id=1, name="Basketball Hoop",
+          description="Metal hoop with a net to shoot the basketball into.",
+          category=basketball)
 session.add(bb)
 session.commit()
 
-soccerBall = Item(user_id=1, name="Soccer cleats", description="Shoes worn whie play Soccer. They have spikes on the bottom.",
-                      category=soccer)
+soccerBall = Item(user_id=1, name="Soccer cleats",
+                  description="Shoes worn whie play Soccer. " +
+                  "They have spikes on the bottom.", category=soccer)
 session.add(soccerBall)
 session.commit()
 
-baseb = Item(user_id=1, name="Baseball bat", description="A wooden or metal bat used to hit a ball.",
-                      category=baseball)
+baseb = Item(user_id=1, name="Baseball bat",
+             description="A wooden or metal bat used to hit a ball.",
+             category=baseball)
 session.add(baseb)
 session.commit()
 
-tennisBall = Item(user_id=1, name="Ball", description="A ball made out of synthetic leather used in the game of Soccer",
-                      category=tennis)
+tennisBall = Item(user_id=1, name="Ball",
+                  description="A ball made out of synthetic leather" +
+                  " used in the game of Soccer", category=tennis)
 session.add(tennisBall)
 session.commit()
 
-racket = Item(user_id=1, name="Racket", description="A hand held racket used to hit a tennis ball across the court.",
-                      category=tennis)
+racket = Item(user_id=1, name="Racket", description="A hand held " +
+	          "racket used to hit a tennis ball across the court.",
+              category=tennis)
 session.add(racket)
 session.commit()
 
-
-
-snowboard = Item(user_id=1, name="Snowboard", description="A winterized skateboard with no wheels.",
-                      category=snowboarding)
+snowboard = Item(user_id=1, name="Snowboard"
+                 description="A winterized skateboard with no wheels.",
+                 category=snowboarding)
 session.add(snowboard)
 session.commit()
 
-googles = Item(user_id=1, name="Goggles", description="Eye protection while snowboarding.",
-                      category=snowboarding)
+googles = Item(user_id=1, name="Goggles",
+               description="Eye protection while snowboarding.",
+               category=snowboarding)
 session.add(googles)
 session.commit()
 
-skates = Item(user_id=1, name="Skates", description="Shoes with blades on the bottom so one can glide across ice.",
-                      category=skating)
+skates = Item(user_id=1, name="Skates", description="Shoes with " +
+              "blades on the bottom so one can glide across ice.",
+              category=skating)
 session.add(skates)
 session.commit()
-
-
