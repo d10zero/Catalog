@@ -13,6 +13,8 @@ from flask import session as login_session
 import requests
 import json
 from flask_httpauth import HTTPBasicAuth
+
+
 auth = HTTPBasicAuth()
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
@@ -22,6 +24,7 @@ DBSession = sessionmaker(bind=engine)
 Session = scoped_session(DBSession)
 app = Flask(__name__)
 
+app.secret_key = 'jwUy2YpROhIizqzKyIJDTrdT'
 
 @app.route('/')
 def latestItems():
