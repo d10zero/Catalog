@@ -1,8 +1,9 @@
+# !/usr/bin/env python3
 from model import Base, User, Category, Item
 from flask import Flask, jsonify, request, url_for
 from flask import abort, g, render_template, redirect
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 from sqlalchemy import create_engine, desc
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -18,25 +19,29 @@ CLIENT_ID = json.loads(
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
-session = DBSession()
+Session = scoped_session(DBSession)
 app = Flask(__name__)
 
 
 @app.route('/')
 def latestItems():
+    session = Session()
     items = session.query(Item).order_by(desc(Item.id)).limit(8)
     categories = session.query(Category).all()
     if 'username' not in login_session or login_session['username'] is None:
+        Session.remove()
         return render_template('publicLatestItem.html', categories=categories,
                                items=items, header="Latest")
     else:
-        print login_session['username']
+        Session.remove()
         return render_template('latestItem.html', categories=categories,
                                items=items, header="Latest")
 
 
+
 @app.route('/catalog/<category>/items')
 def selectedCategory(category):
+    session = Session()
     categories = session.query(Category).all()
     selectedCatagory = session.query(Category).filter_by(name=category).one()
     items = session.query(Item).filter_by(
@@ -51,6 +56,7 @@ def selectedCategory(category):
 
 @app.route('/catalog/<category>/<item>')
 def selectedItem(category, item):
+    session = Session()
     itemName = item.replace('%20', ' ')
     selectedCategory = session.query(Category).filter_by(name=category).one()
     selectedItem = session.query(Item).filter_by(name=itemName).one()
@@ -66,6 +72,7 @@ def selectedItem(category, item):
 
 @app.route('/catalog/addItem', methods=['GET', 'POST'])
 def addItem():
+    session = Session()
     if 'username' not in login_session or login_session['username'] is None:
         return redirect(url_for('latestItems'))
     elif request.method == 'POST':
@@ -94,6 +101,7 @@ def addItem():
 
 @app.route('/catalog/<item>/edit', methods=['GET', 'POST'])
 def editItem(item):
+    session = Session()
     selectedItem = session.query(Item).filter_by(name=item).one()
     if 'username' not in login_session or login_session['username'] is None:
         return redirect(url_for('latestItems'))
@@ -119,6 +127,7 @@ def editItem(item):
 
 @app.route('/catalog/<item>/delete', methods=['POST', 'GET'])
 def deleteItem(item):
+    session = Session()
     selectedItem = session.query(Item).filter_by(name=item).one()
     if 'username' not in login_session or login_session['username'] is None:
         return redirect(url_for('latestItems'))
@@ -135,6 +144,7 @@ def deleteItem(item):
 
 @app.route('/catalog.json', methods=['GET'])
 def getJSON():
+    session = Session()
     categories = session.query(Category).all()
     x = {}
 
@@ -150,6 +160,7 @@ def getJSON():
 @app.route('/token')
 @auth.login_required
 def get_auth_token():
+    session = Session()
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
@@ -157,6 +168,7 @@ def get_auth_token():
 # adding Oauth:
 @app.route('/oauth/<provider>', methods=['POST'])
 def login(provider):
+    session = Session()
     if provider == 'google':
         # Step1 parse the auth code
         auth_code = request.data
@@ -234,6 +246,7 @@ def login(provider):
         login_session['access_token'] = credentials.access_token
         # STEP 5 - Send back token to the client
         # return jsonify({'token': token.decode('ascii')})
+
         return redirect(url_for('latestItems'))
         # return jsonify({'token': token.decode('ascii'), 'duration': 600})
     else:
@@ -242,6 +255,7 @@ def login(provider):
 
 @app.route('/logout', methods=['POST'])
 def logout():
+    session = Session()
     print 'INSIDE LOGOUT'
     access_token = login_session['access_token']
     if access_token is None:
@@ -270,6 +284,7 @@ def logout():
 
 @auth.verify_password
 def verify_password(username_or_token, password):
+    session = Session()
     user_id = User.verify_auth_token(username_or_token)
     if user_id:
         user = session.query(User).filter_by(id=user_id).one()
