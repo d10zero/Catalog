@@ -32,11 +32,9 @@ def latestItems():
     items = session.query(Item).order_by(desc(Item.id)).limit(8)
     categories = session.query(Category).all()
     if 'username' not in login_session or login_session['username'] is None:
-        Session.remove()
         return render_template('publicLatestItem.html', categories=categories,
                                items=items, header="Latest")
     else:
-        Session.remove()
         return render_template('latestItem.html', categories=categories,
                                items=items, header="Latest")
 
