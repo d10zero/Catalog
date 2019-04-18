@@ -14,7 +14,8 @@ import requests
 import json
 from flask_httpauth import HTTPBasicAuth
 
-
+import logging
+logging.basicConfig()
 auth = HTTPBasicAuth()
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
